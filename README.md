@@ -1,1 +1,1 @@
-# seikoits
+# 正興ITS＿専用ソース
