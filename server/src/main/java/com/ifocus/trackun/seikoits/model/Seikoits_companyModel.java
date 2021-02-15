@@ -1,4 +1,4 @@
-package com.ifocus.trackun.seikoits.entity.model;
+package com.ifocus.trackun.seikoits.model;
 
 import java.sql.Timestamp;
 
