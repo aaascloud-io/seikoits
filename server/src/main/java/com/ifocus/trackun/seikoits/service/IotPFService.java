@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -53,6 +55,9 @@ public class IotPFService {
 	
 	@Autowired
 	private IotPfUrlConfig urlConfig;
+	
+	@Autowired
+	private GroupService groupService;
 	
 	public PfToken getPfToken() {
 		PfToken pfToken = null;
@@ -156,6 +161,7 @@ public class IotPFService {
 		HttpPost request = new HttpPost(urlConfig.getDeviceBindModifyUrl());
 		request.setHeader("Authorization", getBearerToken(user.getToken()));
 		request.setHeader("Content-Type", "application/json");
+		
 		JsonElement requestBody = new Gson().toJsonTree(device);
 		request.setEntity(new StringEntity(requestBody.toString(), StandardCharsets.UTF_8));
 		
@@ -167,6 +173,7 @@ public class IotPFService {
             }else {
 				LOG.warn("Device(imei={}) modify fail. detail: {}", device.getImei(), EntityUtils.toString(response.getEntity()));
 			}
+
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -191,10 +198,11 @@ public class IotPFService {
 				unvalidImeis.add(imei);
 			}
 		}
-		
+
 		HttpPost request = new HttpPost(urlConfig.getDeviceBatchUnbindUrl());
 		request.setHeader("Authorization", getBearerToken(user.getToken()));
 		request.setHeader("Content-Type", "application/json");
+
 		JsonObject requestBody = new JsonObject();
 		requestBody.add("deleteTargets", new Gson().toJsonTree(validDeleteTargets));
 		request.setEntity(new StringEntity(requestBody.toString(), StandardCharsets.UTF_8));
@@ -222,6 +230,7 @@ public class IotPFService {
             	batchOperationResult.getFailImeis().addAll(deleteTargets);
         		batchOperationResult.setFailCount(batchOperationResult.getFailImeis().size());
 			}
+            
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -261,11 +270,15 @@ public class IotPFService {
 			}
 		}
 		
-		// TODO user's filter add to extends fields
-		if (user.getGroupid() != null) {
-			urlBuffer.append("&"); // TODO
-			urlBuffer.append("exFields.gid=");
-			urlBuffer.append(user.getGroupid().toString());
+		Map<String, String> exFieldsForDevice = groupService.composeExFieldsForDevice(user);
+		if (exFieldsForDevice.size() > 0) {
+			for (Entry<String, String> entry : exFieldsForDevice.entrySet()) {
+				urlBuffer.append("&");
+				urlBuffer.append("exFields.");
+				urlBuffer.append(entry.getKey());
+				urlBuffer.append("=");
+				urlBuffer.append(entry.getValue());
+			}
 		}
 		
 		String url = urlBuffer.toString();
@@ -296,7 +309,7 @@ public class IotPFService {
 
 	public PaginationList<DeviceStatus> deviceStatusList(Seikoits_userEntity user, Device device, int pageSize, int pageNumber) {
 		PaginationList<DeviceStatus> paginationList = new PaginationList<>(pageSize, pageNumber);
-		
+
 		StringBuffer urlBuffer = new StringBuffer(urlConfig.getDeviceStatusListUrl());
 		urlBuffer.append("?pageSize=");
 		urlBuffer.append(pageSize);
@@ -306,6 +319,7 @@ public class IotPFService {
 		urlBuffer.append("&"); // TODO
 		urlBuffer.append("returnBif=");
 		urlBuffer.append(true);
+ 
 		if (device != null) {
 			if (device.getImei() != null) {
 				urlBuffer.append("&"); // TODO
@@ -329,12 +343,17 @@ public class IotPFService {
 			}
 		}
 		
-		// TODO user's filter add to extends fields
-		if (user.getGroupid() != null) {
-			urlBuffer.append("&"); // TODO
-			urlBuffer.append("exFields.gid=");
-			urlBuffer.append(user.getGroupid().toString());
+		Map<String, String> exFieldsForDevice = groupService.composeExFieldsForDevice(user);
+		if (exFieldsForDevice.size() > 0) {
+			for (Entry<String, String> entry : exFieldsForDevice.entrySet()) {
+				urlBuffer.append("&");
+				urlBuffer.append("exFields.");
+				urlBuffer.append(entry.getKey());
+				urlBuffer.append("=");
+				urlBuffer.append(entry.getValue());
+			}
 		}
+
 		
 		String url = urlBuffer.toString();
 		HttpGet request = new HttpGet(url);

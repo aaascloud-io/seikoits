@@ -27,6 +27,7 @@ public class Device {
 	@Getter
 	@Setter
 	private Map<String, String> exFields = new HashMap<>();
+
 	
 	@Getter
 	@Setter
