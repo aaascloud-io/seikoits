@@ -15,12 +15,12 @@ public class Seikoits_userModel {
 	private Integer groupid;
 	private String userName;
 	private String loginId;
-	private String password;
+//	private String password;
 	private Integer role;
-	private String token;
+	private PfToken pfToken;
 	private Integer i_uid;
 	private Timestamp i_time;
 	private Integer u_uid;
 	private Timestamp u_time;
-
+	
 }
