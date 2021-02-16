@@ -8,6 +8,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.ifocus.trackun.seikoits.model.PfToken;
+
 import lombok.Getter;
 import lombok.Setter;
 
