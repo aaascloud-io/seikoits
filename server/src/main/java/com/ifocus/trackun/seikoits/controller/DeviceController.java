@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
+import com.ifocus.trackun.seikoits.entity.Seikoits_companyEntity;
+import com.ifocus.trackun.seikoits.entity.Seikoits_companyRepository;
+import com.ifocus.trackun.seikoits.entity.Seikoits_divisionEntity;
+import com.ifocus.trackun.seikoits.entity.Seikoits_divisionRepository;
 import com.ifocus.trackun.seikoits.entity.Seikoits_groupEntity;
 import com.ifocus.trackun.seikoits.entity.Seikoits_groupRepository;
 import com.ifocus.trackun.seikoits.entity.Seikoits_userEntity;
@@ -42,6 +46,12 @@ public class DeviceController {
 	@Autowired
 	private Seikoits_groupRepository groupRepository;
 	
+	@Autowired
+	private Seikoits_divisionRepository divisionRepository;
+	
+	@Autowired
+	private Seikoits_companyRepository companyRepository;
+	
 	@PostMapping("/add")
 	public Map<String, Object> add(@RequestHeader("Authorization") String bearerToken, @RequestBody Map<String, Object> paramMap) {
 		Map<String, Object> returnMap = new HashMap<>();
@@ -53,7 +63,7 @@ public class DeviceController {
 				
 				List<Device> devices = new ArrayList<>();
 				if (paramMap.get("list") != null && paramMap.get("list") instanceof List) {
-					
+
 					Gson gson = new Gson();
 					for (Object obj : (List<?>) paramMap.get("list")) {
 						Device device = gson.fromJson(gson.toJson(obj), Device.class);
@@ -89,7 +99,6 @@ public class DeviceController {
 			returnMap.put("errorMessage", "Imei is null");
 		}else {
 			updateTarget.setImei(paramMap.remove("imei").toString());
-			// TODO check imei&user validation
 		}
 		if (bearerToken == null || bearerToken.isEmpty()) {
 			paramterValid = false;
@@ -108,22 +117,58 @@ public class DeviceController {
 			Seikoits_userEntity user = userRepository.findByToken(IotPFService.getRawToken(bearerToken));
 			if (user != null) {
 				
-				if (paramMap.get("groupid") != null) { // group変更
-					Seikoits_groupEntity groupEntity = null;
-					Optional<Seikoits_groupEntity> optional = groupRepository.findById(new Integer(paramMap.get("groupid").toString()));
-					if (optional.isPresent()) {
-						groupEntity = optional.get();
-					}
-					if (groupService.isValid(user, groupEntity)) {
-						updateTarget.getExFields().putAll(groupService.composeExFieldsForDevice(groupEntity));
-						returnMap.put("result", iotPfService.deviceModify(user, updateTarget));
+				if (iotPfService.isUserValidForDevice(user, updateTarget.getImei())) {
+					
+					if (paramMap.get("companyid") != null) { // company変更
+						
+						Seikoits_companyEntity companyEntity = null;
+						Optional<Seikoits_companyEntity> optional = companyRepository.findById(new Integer(paramMap.get("companyid").toString()));
+						if (optional.isPresent()) {
+							companyEntity = optional.get();
+						}
+						if (groupService.isValid(user, companyEntity)) {
+							updateTarget.getExFields().putAll(groupService.composeExFieldsForDevice(companyEntity));
+							returnMap.put("result", iotPfService.deviceModify(user, updateTarget));
+						}else {
+							returnMap.put("errorMessage", "User is unvalid for this company.");
+						}
+						
+					}else if (paramMap.get("divisionid") != null) {  // division変更
+						
+						Seikoits_divisionEntity divisionEntity = null;
+						Optional<Seikoits_divisionEntity> optional = divisionRepository.findById(new Integer(paramMap.get("divisionid").toString()));
+						if (optional.isPresent()) {
+							divisionEntity = optional.get();
+						}
+						if (groupService.isValid(user, divisionEntity)) {
+							updateTarget.getExFields().putAll(groupService.composeExFieldsForDevice(divisionEntity));
+							returnMap.put("result", iotPfService.deviceModify(user, updateTarget));
+						}else {
+							returnMap.put("errorMessage", "User is unvalid for this division.");
+						}
+						
+					}else if (paramMap.get("groupid") != null) {  // group変更
+						
+						Seikoits_groupEntity groupEntity = null;
+						Optional<Seikoits_groupEntity> optional = groupRepository.findById(new Integer(paramMap.get("groupid").toString()));
+						if (optional.isPresent()) {
+							groupEntity = optional.get();
+						}
+						if (groupService.isValid(user, groupEntity)) {
+							updateTarget.getExFields().putAll(groupService.composeExFieldsForDevice(groupEntity));
+							returnMap.put("result", iotPfService.deviceModify(user, updateTarget));
+						}else {
+							returnMap.put("errorMessage", "User is unvalid for this group.");
+						}
+						
 					}else {
-						returnMap.put("errorMessage", "User is unvalid for this group.");
+						returnMap.put("result", iotPfService.deviceModify(user, updateTarget));
 					}
 					
 				}else {
-					returnMap.put("result", iotPfService.deviceModify(user, updateTarget));
+					returnMap.put("errorMessage", "Unvalid user for this device.");
 				}
+				
 				
 			}else {
 				returnMap.put("errorMessage", "Authorization token is unvalid.");

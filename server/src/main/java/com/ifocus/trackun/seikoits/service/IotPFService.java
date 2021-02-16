@@ -187,12 +187,7 @@ public class IotPFService {
 		List<String> validDeleteTargets = new ArrayList<>();
 		List<String> unvalidImeis = new ArrayList<>();
 		for (String imei : deleteTargets) {
-			// check valid
-			Device device = new Device();
-			device.setImei(imei);
-			PaginationList<Device> list = deviceList(user, device, 1, 1);
-			// remove
-			if (list.getTotal() > 0) {
+			if (isUserValidForDevice(user, imei)) {
 				validDeleteTargets.add(imei);
 			}else {
 				unvalidImeis.add(imei);
@@ -238,6 +233,13 @@ public class IotPFService {
 		return batchOperationResult;
 	}
 
+	public boolean isUserValidForDevice(Seikoits_userEntity user, String imei) {
+		Device device = new Device();
+		device.setImei(imei);
+		PaginationList<Device> list = deviceList(user, device, 1, 1);
+		return list.getTotal() > 0;
+	}
+
 	public PaginationList<Device> deviceList(Seikoits_userEntity user, Device device, int pageSize, int pageNumber) {
 		PaginationList<Device> paginationList = new PaginationList<>(pageSize, pageNumber);
 		
@@ -254,17 +256,17 @@ public class IotPFService {
 				urlBuffer.append(device.getImei());
 			}
 			if (device.getIccid() != null) {
-				urlBuffer.append("&"); // TODO
+				urlBuffer.append("&"); 
 				urlBuffer.append("iccid=");
 				urlBuffer.append(device.getIccid());
 			}
 			if (device.getDevicename() != null) {
-				urlBuffer.append("&"); // TODO
+				urlBuffer.append("&"); 
 				urlBuffer.append("devicename=");
 				urlBuffer.append(device.getDevicename());
 			}
 			if (device.getImsi() != null) {
-				urlBuffer.append("&"); // TODO
+				urlBuffer.append("&"); 
 				urlBuffer.append("imsi=");
 				urlBuffer.append(device.getImsi());
 			}
@@ -316,28 +318,28 @@ public class IotPFService {
 		urlBuffer.append("&"); // TODO
 		urlBuffer.append("pageNumber=");
 		urlBuffer.append(pageNumber);
-		urlBuffer.append("&"); // TODO
+		urlBuffer.append("&"); 
 		urlBuffer.append("returnBif=");
 		urlBuffer.append(true);
  
 		if (device != null) {
 			if (device.getImei() != null) {
-				urlBuffer.append("&"); // TODO
+				urlBuffer.append("&"); 
 				urlBuffer.append("imei=");
 				urlBuffer.append(device.getImei());
 			}
 			if (device.getIccid() != null) {
-				urlBuffer.append("&"); // TODO
+				urlBuffer.append("&"); 
 				urlBuffer.append("bif.iccid=");
 				urlBuffer.append(device.getIccid());
 			}
 			if (device.getDevicename() != null) {
-				urlBuffer.append("&"); // TODO
+				urlBuffer.append("&"); 
 				urlBuffer.append("bif.devicename=");
 				urlBuffer.append(device.getDevicename());
 			}
 			if (device.getImsi() != null) {
-				urlBuffer.append("&"); // TODO
+				urlBuffer.append("&"); 
 				urlBuffer.append("bif.imsi=");
 				urlBuffer.append(device.getImsi());
 			}
