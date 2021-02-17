@@ -15,24 +15,24 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ifocus.trackun.seikoits.constant.RoleConstant;
 import com.ifocus.trackun.seikoits.entity.Seikoits_userEntity;
 import com.ifocus.trackun.seikoits.entity.Seikoits_userRepository;
-import com.ifocus.trackun.seikoits.model.Seikoits_companyModel;
-import com.ifocus.trackun.seikoits.service.CompanyService;
+import com.ifocus.trackun.seikoits.model.Seikoits_divisionModel;
+import com.ifocus.trackun.seikoits.service.DivisionService;
 import com.ifocus.trackun.seikoits.service.IotPFService;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/company")
-public class CompanyController {
+@RequestMapping("/division")
+public class DivisionController {
 
 	@Autowired
 	private Seikoits_userRepository userRepository;
 
 	@Autowired
-	private CompanyService companyService;
+	private DivisionService divisionService;
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Map<String, Object> list(@RequestHeader("Authorization") String bearerToken,
-			@RequestParam("pageSize") int pageSize, @RequestParam("pageNumber") int pageNumber) {
+			@RequestParam("companyid") int companyid, @RequestParam("pageSize") int pageSize, @RequestParam("pageNumber") int pageNumber) {
 		Map<String, Object> returnMap = new HashMap<>();
 
 		try {
@@ -40,7 +40,7 @@ public class CompanyController {
 			if (user != null) {
 				// 会社管理者なら、
 				if (user.getRole() == RoleConstant.ROLE_ADMIN) {
-					returnMap.put("list", companyService.getUnderCompanyInfos(user));
+					returnMap.put("list", divisionService.getUnderDivisionInfos(user,companyid));
 				} else {
 					returnMap.put("errorMessage", "No access authority.");
 				}
@@ -48,7 +48,7 @@ public class CompanyController {
 				returnMap.put("errorMessage", "No user is found.");
 			}
 		} catch (Exception e) {
-			returnMap.put("errorMessage", "getUnderCompanyInfos() ERROR: " + e.getMessage());
+			returnMap.put("errorMessage", "getUnderDivisionInfos() ERROR: " + e.getMessage());
 		}
 
 		return returnMap;
@@ -56,7 +56,7 @@ public class CompanyController {
 
 	@RequestMapping(value = "/detailInfo", method = RequestMethod.GET)
 	public Map<String, Object> detailInfo(@RequestHeader("Authorization") String bearerToken,
-			@RequestParam("companyId") int companyId) {
+			@RequestParam("divisionId") int divisionId) {
 		Map<String, Object> returnMap = new HashMap<>();
 
 		try {
@@ -64,7 +64,7 @@ public class CompanyController {
 			if (user != null) {
 				// 会社管理者なら、
 				if (user.getRole() == RoleConstant.ROLE_ADMIN) {
-					returnMap.put("detailInfo", companyService.getCompanyInfo(companyId));
+					returnMap.put("detailInfo", divisionService.getDivisionInfo(divisionId));
 				} else {
 					returnMap.put("errorMessage", "No access authority.");
 				}
@@ -72,14 +72,14 @@ public class CompanyController {
 				returnMap.put("errorMessage", "No user is found.");
 			}
 		} catch (Exception e) {
-			returnMap.put("errorMessage", "getCompanyInfo() ERROR: " + e.getMessage());
+			returnMap.put("errorMessage", "getDivisionInfo() ERROR: " + e.getMessage());
 		}
 
 		return returnMap;
 	}
 
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-	public Map<String, Object> add(@RequestHeader("Authorization") String bearerToken, @RequestBody Seikoits_companyModel company) {
+	public Map<String, Object> add(@RequestHeader("Authorization") String bearerToken, @RequestBody Seikoits_divisionModel division) {
 		Map<String, Object> returnMap = new HashMap<>();
 
 		try {
@@ -87,7 +87,7 @@ public class CompanyController {
 			if (user != null) {
 				// 会社管理者なら、
 				if (user.getRole() == RoleConstant.ROLE_ADMIN) {
-					returnMap.put("registeredCompany",companyService.registerCompany(user, company));
+					returnMap.put("registeredDivision",divisionService.registerDivision(user, division));
 				} else {
 					returnMap.put("errorMessage", "No access authority.");
 				}
@@ -95,13 +95,13 @@ public class CompanyController {
 				returnMap.put("errorMessage", "No user is found.");
 			}
 		} catch (Exception e) {
-			returnMap.put("errorMessage", "registerCompany() ERROR: " + e.getMessage());
+			returnMap.put("errorMessage", "registerDivision() ERROR: " + e.getMessage());
 		}
 		return returnMap;
 	}
 
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	public Map<String, Object> update(@RequestHeader("Authorization") String bearerToken, @RequestBody Seikoits_companyModel company) {
+	public Map<String, Object> update(@RequestHeader("Authorization") String bearerToken, @RequestBody Seikoits_divisionModel division) {
 		Map<String, Object> returnMap = new HashMap<>();
 
 		try {
@@ -109,7 +109,7 @@ public class CompanyController {
 			if (user != null) {
 				// 会社管理者なら、
 				if (user.getRole() == RoleConstant.ROLE_ADMIN) {
-					returnMap.put("updatedCompany",companyService.updateCompany(user, company));
+					returnMap.put("updatedDivision",divisionService.updateDivision(user, division));
 				} else {
 					returnMap.put("errorMessage", "No access authority.");
 				}
@@ -117,14 +117,14 @@ public class CompanyController {
 				returnMap.put("errorMessage", "No user is found.");
 			}
 		} catch (Exception e) {
-			returnMap.put("errorMessage", "updateCompany() ERROR: " + e.getMessage());
+			returnMap.put("errorMessage", "updateDivision() ERROR: " + e.getMessage());
 		}
 
 		return returnMap;
 	}
 
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-public Map<String, Object> delete(@RequestHeader("Authorization") String bearerToken, @RequestBody Seikoits_companyModel company) {
+	public Map<String, Object> delete(@RequestHeader("Authorization") String bearerToken, @RequestBody Seikoits_divisionModel division) {
 		Map<String, Object> returnMap = new HashMap<>();
 
 		try {
@@ -132,8 +132,8 @@ public Map<String, Object> delete(@RequestHeader("Authorization") String bearerT
 			if (user != null) {
 				// 会社管理者なら、
 				if (user.getRole() == RoleConstant.ROLE_ADMIN) {
-					companyService.deleteCompany(company);
-					returnMap.put("deletedCompany",company);
+					divisionService.deleteDivision(division);
+					returnMap.put("deletedDivision",division);
 				} else {
 					returnMap.put("errorMessage", "No access authority.");
 				}
@@ -141,7 +141,7 @@ public Map<String, Object> delete(@RequestHeader("Authorization") String bearerT
 				returnMap.put("errorMessage", "No user is found.");
 			}
 		} catch (Exception e) {
-			returnMap.put("errorMessage", "deleteCompany() ERROR: " + e.getMessage());
+			returnMap.put("errorMessage", "deleteDivision() ERROR: " + e.getMessage());
 		}
 
 		return returnMap;
