@@ -7,9 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.ifocus.trackun.seikoits.model.PfToken;
+import javax.persistence.Lob;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +27,16 @@ public class Seikoits_userEntity {
 	private String loginId;
 	private String password;
 	private Integer role;
+	
+	public class RoleVal{
+		public final static int COMPANY_ADMIN = 1;
+		public final static int DEPARTMENT_ADMIN = 2;
+		public final static int NORMAL = 3;
+	}
+	
+	@Lob
 	private String token;
+	
 	@Column(updatable = false)
 	private Integer i_uid;
 	@Column(updatable = false)

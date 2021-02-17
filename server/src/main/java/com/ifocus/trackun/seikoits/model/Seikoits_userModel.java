@@ -15,7 +15,7 @@ public class Seikoits_userModel {
 	private Integer groupid;
 	private String userName;
 	private String loginId;
-	private String password;
+//	private String password;
 	private Integer role;
 	private PfToken pfToken;
 	private Integer i_uid;

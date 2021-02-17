@@ -1,0 +1,49 @@
+{
+    "properties": [
+        {
+            "name": "system.top-user.username",
+            "type": "java.lang.String",
+            "sourceType": "com.ifocus.trackun.seikoits.config.SystemUserConfig"
+        },
+        {
+            "name": "system.top-user.password",
+            "type": "java.lang.String",
+            "sourceType": "com.ifocus.trackun.seikoits.config.SystemUserConfig"
+        },
+        {
+            "name": "iotpf.url.device-batch-bind-url",
+            "type": "java.lang.String",
+            "sourceType": "com.ifocus.trackun.seikoits.config.IotPfUrlConfig"
+        },
+        {
+            "name": "iotpf.url.device-batch-unbind-url",
+            "type": "java.lang.String",
+            "sourceType": "com.ifocus.trackun.seikoits.config.IotPfUrlConfig"
+        },
+        {
+            "name": "iotpf.url.device-bind-modify-url",
+            "type": "java.lang.String",
+            "sourceType": "com.ifocus.trackun.seikoits.config.IotPfUrlConfig"
+        },
+        {
+            "name": "iotpf.url.device-bind-list-url",
+            "type": "java.lang.String",
+            "sourceType": "com.ifocus.trackun.seikoits.config.IotPfUrlConfig"
+        },
+        {
+            "name": "iotpf.url.device-status-list-url",
+            "type": "java.lang.String",
+            "sourceType": "com.ifocus.trackun.seikoits.config.IotPfUrlConfig"
+        },
+        {
+            "name": "iotpf.url.token-fetch-url",
+            "type": "java.lang.String",
+            "sourceType": "com.ifocus.trackun.seikoits.config.IotPfUrlConfig"
+        },
+        {
+            "name": "iotpf.url.token-update-url",
+            "type": "java.lang.String",
+            "sourceType": "com.ifocus.trackun.seikoits.config.IotPfUrlConfig"
+        }
+    ]
+}

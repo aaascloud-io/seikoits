@@ -33,11 +33,11 @@ public class UserService {
 		return loginedUser;
 	}
 
-	public Seikoits_userModel refreshToken(Seikoits_userEntity userEntity, String token) {
+	public Seikoits_userModel refreshToken(Seikoits_userEntity userEntity, String refreshToken) {
 		Seikoits_userModel loginedUser = null;
 		
 		if (userEntity != null) {
-			PfToken pfToken = iotPFService.refreshPfToken(userEntity, token);
+			PfToken pfToken = iotPFService.refreshPfToken(userEntity, refreshToken);
 			userEntity.setToken(pfToken.getAccess_token());
 			userEntity = userRepository.save(userEntity);
 			

@@ -27,4 +27,19 @@ public class Device {
 	@Getter
 	@Setter
 	private Map<String, String> exFields = new HashMap<>();
+
+	
+	@Getter
+	@Setter
+	private String firmwareVersion;
+
+	@Getter
+	@Setter
+	private String newestVersionConfirmTime;
+
+	@Getter
+	@Setter
+	private Map<String, Map<String, Object>> metadata;
+	
+
 }
