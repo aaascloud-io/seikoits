@@ -12,7 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.ifocus.trackun.seikoits.entity.Seikoits_userEntity;
 import com.ifocus.trackun.seikoits.entity.Seikoits_userRepository;
 import com.ifocus.trackun.seikoits.model.Seikoits_companyModel;
+import com.ifocus.trackun.seikoits.model.Seikoits_divisionModel;
 import com.ifocus.trackun.seikoits.service.CompanyService;
+import com.ifocus.trackun.seikoits.service.DivisionService;
 
 @SpringBootTest
 class SeikoitsApplicationTests {
@@ -22,6 +24,8 @@ class SeikoitsApplicationTests {
 
 	@Autowired
 	private CompanyService companyService;
+	@Autowired
+	private DivisionService divisionService;
 
 	@Test
 	void contextLoads() {
@@ -125,6 +129,37 @@ class SeikoitsApplicationTests {
 		assertEquals("03-1234-ZZZZ", inserted.getTel());
 		assertEquals("03-1234-AAAA", inserted.getFax());
 		assertEquals(1, inserted.getLevel());
+
+	}
+
+	/*
+	 * DivisionService
+	 * 部門更新テストupdateDivision
+	 * 正常系
+	 *
+	 */
+	@Test
+	public void testUpdateDivision() throws Exception {
+
+		// ifocus
+		Optional<Seikoits_userEntity> loginUserEntity = seikoits_userRepository.findById(1);
+
+		Seikoits_divisionModel model = new Seikoits_divisionModel();
+		model.setDivisionid(6);
+		model.setCompanyid(2);
+		model.setDivisionname("開発部");
+		model.setSummary("東京都");
+		model.setManager("鈴木");
+		model.setManagermail("XXX@i-focus.co.jp");
+		model.setManagertel("03-1234-XXXX");
+
+		Seikoits_divisionModel updated = divisionService.updateDivision(loginUserEntity.get(), model);
+
+		assertEquals("開発部", updated.getDivisionname());
+		assertEquals("東京都", updated.getSummary());
+		assertEquals("鈴木", updated.getManager());
+		assertEquals("XXX@i-focus.co.jp", updated.getManagermail());
+		assertEquals("03-1234-XXXX", updated.getManagertel());
 
 	}
 }
