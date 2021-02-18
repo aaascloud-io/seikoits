@@ -60,11 +60,14 @@ public class GroupService {
 				break;
 			case RoleVal.DEPARTMENT_ADMIN:
 				if (userEntity.getDivisionid() != null) {
+					exFieldsMap.put("cid", userEntity.getCompanyid().toString());
 					exFieldsMap.put("did", userEntity.getDivisionid().toString());
 				}
 				break;
 			case RoleVal.NORMAL:
 				if (userEntity.getGroupid() != null) {
+					exFieldsMap.put("cid", userEntity.getCompanyid().toString());
+					exFieldsMap.put("did", userEntity.getDivisionid().toString());
 					exFieldsMap.put("gid", userEntity.getGroupid().toString());
 				}
 				break;
