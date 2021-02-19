@@ -18,7 +18,7 @@ import lombok.Setter;
 public class Seikoits_groupEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private Integer groupId;
+	private Integer groupid;
 	private Integer companyid;
 	private Integer divisionid;
 	private String groupname;
