@@ -22,22 +22,22 @@ import com.ifocus.trackun.seikoits.service.UserService;
 @RestController
 @RequestMapping("/login")
 public class LoginController {
-	
+
 	@Autowired
 	private Seikoits_userRepository userRepository;
-	
+
 	@Autowired
 	private UserService userService;
-	
+
 	@PostMapping
 	public Map<String, Object> login(@RequestBody Map<String, String> paramMap) {
 		String loginId = paramMap.get("loginId");
 		String password = paramMap.get("password");
-		
+
 		Map<String, Object> returnMap = new HashMap<>();
-		
-		Seikoits_userEntity user = userRepository.findByLoginId(loginId);
-		
+
+		Seikoits_userEntity user = userRepository.findByLoginid(loginId);
+
 		if (user != null) {
 			String encodedPwd = DigestUtils.md5Hex(password.getBytes());
 			if (user.getPassword().equals(encodedPwd)) {
@@ -48,25 +48,25 @@ public class LoginController {
 		}else {
 			returnMap.put("errorMessage", "No user is found.");
 		}
-		
+
 		return returnMap;
 	}
-	
+
 	@PostMapping("/refresh")
 	public Map<String, Object> refresh(@RequestHeader("Authorization") String bearerToken, @RequestBody Map<String, String> tokenMap) {
 		String refreshToken = tokenMap.get("refresh_token");
-		
+
 		Map<String, Object> returnMap = new HashMap<>();
-		
+
 		Seikoits_userEntity userEntity = userRepository.findByToken(IotPFService.getRawToken(bearerToken));
 		Seikoits_userModel usermodal = userService.refreshToken(userEntity, refreshToken);
-		
+
 		if (usermodal != null) {
 			returnMap.put("user", usermodal);
 		}else {
 			returnMap.put("errorMessage", "No user is found.");
 		}
-		
+
 		return returnMap;
 	}
 

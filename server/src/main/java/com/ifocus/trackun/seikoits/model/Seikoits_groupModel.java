@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class Seikoits_groupModel {
 
-	private Integer groupId;
+	private Integer groupid;
 	private Integer companyid;
 	private Integer divisionid;
 	private String groupname;
@@ -22,4 +22,16 @@ public class Seikoits_groupModel {
 	private Integer u_uid;
 	private Timestamp u_time;
 
+	/*
+	 * groupname情報検索条件取得
+	 *
+	 */
+	public String getGroupnameForSearch() {
+
+		if (this.groupname == null) {
+			return "%%";
+		} else {
+			return "%" + this.groupname.trim() + "%";
+		}
+	}
 }

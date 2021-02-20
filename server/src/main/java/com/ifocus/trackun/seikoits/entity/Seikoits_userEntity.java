@@ -23,20 +23,20 @@ public class Seikoits_userEntity {
 	private Integer companyid;
 	private Integer divisionid;
 	private Integer groupid;
-	private String userName;
-	private String loginId;
+	private String username;
+	private String loginid;
 	private String password;
 	private Integer role;
-	
+
 	public class RoleVal{
 		public final static int COMPANY_ADMIN = 1;
 		public final static int DEPARTMENT_ADMIN = 2;
 		public final static int NORMAL = 3;
 	}
-	
+
 	@Lob
 	private String token;
-	
+
 	@Column(updatable = false)
 	private Integer i_uid;
 	@Column(updatable = false)
