@@ -133,6 +133,29 @@ public class UserController {
 		return returnMap;
 	}
 
+	@RequestMapping(value = "/updateProfile", method = RequestMethod.POST)
+	public Map<String, Object> updateProfile(@RequestHeader("Authorization") String bearerToken, @RequestBody Seikoits_userModel userModel) {
+		Map<String, Object> returnMap = new HashMap<>();
+
+		try {
+			Seikoits_userEntity user = userRepository.findByToken(IotPFService.getRawToken(bearerToken));
+			if (user != null) {
+				// 本人なら、
+				if (user.getLoginid().equals(userModel.getLoginid())) {
+					returnMap.put("updatedUser",userService.updateUserProfile(user, userModel));
+				} else {
+					returnMap.put("errorMessage", "No access authority.");
+				}
+			} else {
+				returnMap.put("errorMessage", "No user is found.");
+			}
+		} catch (Exception e) {
+			returnMap.put("errorMessage", "updateUser() ERROR: " + e.getMessage());
+		}
+
+		return returnMap;
+	}
+
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Map<String, Object> delete(@RequestHeader("Authorization") String bearerToken, @RequestBody Seikoits_userModel userModel) {
 		Map<String, Object> returnMap = new HashMap<>();
