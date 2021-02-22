@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ifocus.trackun.seikoits.constant.LevelConstant;
+import com.ifocus.trackun.seikoits.constant.RoleConstant;
 import com.ifocus.trackun.seikoits.entity.Seikoits_companyEntity;
 import com.ifocus.trackun.seikoits.entity.Seikoits_companyRepository;
 import com.ifocus.trackun.seikoits.entity.Seikoits_divisionEntity;
@@ -20,7 +22,6 @@ import com.ifocus.trackun.seikoits.entity.Seikoits_divisionRepository;
 import com.ifocus.trackun.seikoits.entity.Seikoits_groupEntity;
 import com.ifocus.trackun.seikoits.entity.Seikoits_groupRepository;
 import com.ifocus.trackun.seikoits.entity.Seikoits_userEntity;
-import com.ifocus.trackun.seikoits.entity.Seikoits_userEntity.RoleVal;
 import com.ifocus.trackun.seikoits.entity.Seikoits_userRepository;
 import com.ifocus.trackun.seikoits.service.IotPFService;
 
@@ -47,40 +48,67 @@ public class TreeNodeController {
 
 		Seikoits_userEntity user = userRepository.findByToken(IotPFService.getRawToken(bearerToken));
 		if (user != null) {
+			
 			Map<String, Object> treeMap = new HashMap<>();
-			switch (user.getRole()) {
-			case RoleVal.NORMAL:
+			
+			if (user.getRole() == RoleConstant.ROLE_ADMIN) {
+				
+				Integer companyid = user.getCompanyid();
+				Seikoits_companyEntity userCompanyEntity = companyRepository.findByCompanyid(companyid);
+				if (userCompanyEntity.getLevel() == LevelConstant.LEVEL_TOP || userCompanyEntity.getLevel() == LevelConstant.LEVEL_ONE) {
+					// ifocus user
+					// its user TODO bug
+					// find all companys TODO bug, no method to find companies, just user all level 2 company
+					List<Seikoits_companyEntity> list = companyRepository.findCompanyListByLevel(LevelConstant.LEVEL_TWO);
+					List<Map<String, Object>> companyList = new ArrayList<>();
+					for (Seikoits_companyEntity seikoits_companyEntity : list) {
+						Map<String, Object> companyMap = new HashMap<>();
+						companyMap.put("data", seikoits_companyEntity);
+						
+						List<Map<String, Object>> divisionTrees = new ArrayList<>();
+						List<Seikoits_divisionEntity> divisionEntities = seikoits_divisionRepository.findByCompanyid(seikoits_companyEntity.getCompanyid());
+						for (Seikoits_divisionEntity seikoits_divisionEntity : divisionEntities) {
+							divisionTrees.add(divisionTree(seikoits_divisionEntity));
+						}
+						companyMap.put("divisions", divisionTrees);
+						
+						companyList.add(companyMap);
+					}
+					Map<String, Object> companyMap = new HashMap<>();
+					companyMap.put("data", userCompanyEntity);
+					companyMap.put("companys", companyList);
+					treeMap.put("level1Company", companyMap);
+				}else if (userCompanyEntity.getLevel() == LevelConstant.LEVEL_TWO) {
+					// normal company admin
+					Optional<Seikoits_companyEntity> optionalC = companyRepository.findById(user.getCompanyid());
+					if (optionalC.isPresent()) {
+						Seikoits_companyEntity companyEntity = optionalC.get();
+						// find divisions of company
+						List<Map<String, Object>> divisionTrees = new ArrayList<>();
+						List<Seikoits_divisionEntity> divisionEntities = seikoits_divisionRepository.findByCompanyid(user.getCompanyid());
+						for (Seikoits_divisionEntity seikoits_divisionEntity : divisionEntities) {
+							divisionTrees.add(divisionTree(seikoits_divisionEntity));
+						}
+						Map<String, Object> companyMap = new HashMap<>();
+						companyMap.put("data", companyEntity);
+						companyMap.put("divisions", divisionTrees);
+						treeMap.put("company", companyMap);
+					}
+				}
+				
+			}else if (user.getRole() == RoleConstant.ROLE_DIV_PERSON) {
 				Optional<Seikoits_groupEntity> optional = seikoits_groupRepository.findById(user.getGroupid());
 				if (optional.isPresent()) {
 					treeMap.put("group", optional.get());
 				}
-				break;
-			case RoleVal.DEPARTMENT_ADMIN:
+			}else if (user.getRole() == RoleConstant.ROLE_DIV_ADMIN) {
 				Optional<Seikoits_divisionEntity> optionalD = seikoits_divisionRepository.findById(user.getDivisionid());
 				if (optionalD.isPresent()) {
 					Seikoits_divisionEntity divisionEntity = optionalD.get();
 					treeMap.put("division", divisionTree(divisionEntity));
 				}
-				break;
-			case RoleVal.COMPANY_ADMIN:
-				Optional<Seikoits_companyEntity> optionalC = companyRepository.findById(user.getCompanyid());
-				if (optionalC.isPresent()) {
-					Seikoits_companyEntity companyEntity = optionalC.get();
-					// find divisions of company
-					List<Map<String, Object>> divisionTrees = new ArrayList<>();
-					List<Seikoits_divisionEntity> divisionEntities = seikoits_divisionRepository.findByCompanyid(user.getCompanyid());
-					for (Seikoits_divisionEntity seikoits_divisionEntity : divisionEntities) {
-						divisionTrees.add(divisionTree(seikoits_divisionEntity));
-					}
-					Map<String, Object> companyMap = new HashMap<>();
-					companyMap.put("data", companyEntity);
-					companyMap.put("divisions", divisionTrees);
-					treeMap.put("company", companyMap);
-				}
-				break;
-			default:
-				break;
 			}
+			
 			returnMap.put("data", treeMap);
 		}else {
 			returnMap.put("errorMessage", "No user is found.");

@@ -27,7 +27,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.ifocus.trackun.seikoits.config.IotPfUrlConfig;
-import com.ifocus.trackun.seikoits.config.SystemUserConfig;
+import com.ifocus.trackun.seikoits.config.IotPfUserConfig;
 import com.ifocus.trackun.seikoits.entity.Seikoits_userEntity;
 import com.ifocus.trackun.seikoits.model.BatchOperationResult;
 import com.ifocus.trackun.seikoits.model.Device;
@@ -51,7 +51,7 @@ public class IotPFService {
 	private Logger LOG = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
-	private SystemUserConfig systemUserConfig;
+	private IotPfUserConfig iotPfUserConfig;
 	
 	@Autowired
 	private IotPfUrlConfig urlConfig;
@@ -67,8 +67,8 @@ public class IotPFService {
 		List <BasicNameValuePair> parameters = new ArrayList<>();
 		parameters.add(new BasicNameValuePair("grant_type", "password"));
 		parameters.add(new BasicNameValuePair("client_id", "trackun"));
-		parameters.add(new BasicNameValuePair("username", systemUserConfig.getUsername())); 
-		parameters.add(new BasicNameValuePair("password", systemUserConfig.getPassword()));
+		parameters.add(new BasicNameValuePair("username", iotPfUserConfig.getUsername())); 
+		parameters.add(new BasicNameValuePair("password", iotPfUserConfig.getPassword()));
 		try {
 			request.setEntity(new UrlEncodedFormEntity(parameters));
 		} catch (UnsupportedEncodingException e) {

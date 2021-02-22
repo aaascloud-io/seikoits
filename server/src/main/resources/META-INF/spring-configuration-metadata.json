@@ -1,14 +1,14 @@
 {
     "properties": [
         {
-            "name": "system.top-user.username",
+            "name": "iotpf.user.username",
             "type": "java.lang.String",
-            "sourceType": "com.ifocus.trackun.seikoits.config.SystemUserConfig"
+            "sourceType": "com.ifocus.trackun.seikoits.config.IotPfUserConfig"
         },
         {
-            "name": "system.top-user.password",
+            "name": "iotpf.user.password",
             "type": "java.lang.String",
-            "sourceType": "com.ifocus.trackun.seikoits.config.SystemUserConfig"
+            "sourceType": "com.ifocus.trackun.seikoits.config.IotPfUserConfig"
         },
         {
             "name": "iotpf.url.device-batch-bind-url",

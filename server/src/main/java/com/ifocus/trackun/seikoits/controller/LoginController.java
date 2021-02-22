@@ -3,7 +3,6 @@ package com.ifocus.trackun.seikoits.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +15,7 @@ import com.ifocus.trackun.seikoits.entity.Seikoits_userEntity;
 import com.ifocus.trackun.seikoits.entity.Seikoits_userRepository;
 import com.ifocus.trackun.seikoits.model.Seikoits_userModel;
 import com.ifocus.trackun.seikoits.service.IotPFService;
+import com.ifocus.trackun.seikoits.service.SystemService;
 import com.ifocus.trackun.seikoits.service.UserService;
 
 @CrossOrigin
@@ -28,6 +28,9 @@ public class LoginController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private SystemService systemService;
 
 	@PostMapping
 	public Map<String, Object> login(@RequestBody Map<String, String> paramMap) {
@@ -39,8 +42,7 @@ public class LoginController {
 		Seikoits_userEntity user = userRepository.findByLoginid(loginId);
 
 		if (user != null) {
-			String encodedPwd = DigestUtils.md5Hex(password.getBytes());
-			if (user.getPassword().equals(encodedPwd)) {
+			if (systemService.passwordEquals(password, user.getPassword())) {
 				returnMap.put("user", userService.login(user));
 			}else {
 				returnMap.put("errorMessage", "Password unvalid.");

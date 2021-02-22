@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Component
-@ConfigurationProperties(prefix="system.top-user")
-public class SystemUserConfig {
+@ConfigurationProperties(prefix="iotpf.user")
+public class IotPfUserConfig {
 
 	@Getter
 	@Setter

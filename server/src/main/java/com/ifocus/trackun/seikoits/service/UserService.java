@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,6 +39,16 @@ public class UserService {
 
 	@Autowired
 	private IotPFService iotPFService;
+	
+	@Autowired
+	private SystemService systemService;
+	
+	@PostConstruct
+	private void initTopUser() {
+		if (systemService.getSystemTopUser() == null) {
+			throw new RuntimeException("System service failed to initlize system top user.");
+		}
+	}
 
 	public Seikoits_userModel login(Seikoits_userEntity userEntity){
 		Seikoits_userModel loginedUser = null;
@@ -212,7 +224,7 @@ public class UserService {
 	 *
 	 */
 	private List<Seikoits_userModel> getModelsByEntitys(List<Seikoits_userEntity> entityList) throws Exception {
-		List<Seikoits_userModel> modelList = new ArrayList();
+		List<Seikoits_userModel> modelList = new ArrayList<Seikoits_userModel>();
 		for (Seikoits_userEntity entity:entityList) {
 			modelList.add(getModelByEntity(entity));
 		}

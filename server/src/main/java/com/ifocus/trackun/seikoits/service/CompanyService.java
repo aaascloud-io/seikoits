@@ -95,7 +95,7 @@ public class CompanyService {
 	 *
 	 */
 	private List<Seikoits_companyModel> getModelsByEntitys(List<Seikoits_companyEntity> entityList) throws Exception {
-		List<Seikoits_companyModel> modelList = new ArrayList();
+		List<Seikoits_companyModel> modelList = new ArrayList<Seikoits_companyModel>();
 		for (Seikoits_companyEntity entity:entityList) {
 			modelList.add(getModelByEntity(entity));
 		}

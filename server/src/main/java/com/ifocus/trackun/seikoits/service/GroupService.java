@@ -10,12 +10,14 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ifocus.trackun.seikoits.constant.LevelConstant;
+import com.ifocus.trackun.seikoits.constant.RoleConstant;
 import com.ifocus.trackun.seikoits.entity.Seikoits_companyEntity;
+import com.ifocus.trackun.seikoits.entity.Seikoits_companyRepository;
 import com.ifocus.trackun.seikoits.entity.Seikoits_divisionEntity;
 import com.ifocus.trackun.seikoits.entity.Seikoits_groupEntity;
 import com.ifocus.trackun.seikoits.entity.Seikoits_groupRepository;
 import com.ifocus.trackun.seikoits.entity.Seikoits_userEntity;
-import com.ifocus.trackun.seikoits.entity.Seikoits_userEntity.RoleVal;
 import com.ifocus.trackun.seikoits.model.Seikoits_groupModel;
 
 @Component
@@ -23,26 +25,19 @@ public class GroupService {
 
 	@Autowired
 	private Seikoits_groupRepository seikoits_groupRepository ;
+	
+	@Autowired
+	private Seikoits_companyRepository seikoits_companyRepository;
 
 	public boolean isValid(Seikoits_userEntity user, Seikoits_groupEntity groupEntity) {
 		boolean isValid = false;
 
-		// group所属の部門の管理者であれば、合法
-		if (user.getRole() == null) {
+		if (user.getRole() == RoleConstant.ROLE_ADMIN && groupEntity.getCompanyid() == user.getCompanyid()) {
+			// 該当グループの会社管理者であれば、合法
 			isValid = true;
-		}else {
-			switch (user.getRole().intValue()) {
-			case RoleVal.COMPANY_ADMIN:
-				isValid = true;
-				break;
-			case RoleVal.DEPARTMENT_ADMIN:
-				if (user.getDivisionid() == groupEntity.getDivisionid()) {
-					isValid = true;
-				}
-				break;
-			default:
-				break;
-			}
+		}else if (user.getRole() == RoleConstant.ROLE_DIV_ADMIN && groupEntity.getDivisionid() == user.getDivisionid()) {
+			// group所属の部門の管理者であれば、合法
+			isValid = true;
 		}
 
 		return isValid;
@@ -62,29 +57,29 @@ public class GroupService {
 		// ユーザーのROLEで検索のフィールドが決まる
 		if (userEntity.getRole() != null) {
 
-			switch (userEntity.getRole().intValue()) {
-			case RoleVal.COMPANY_ADMIN:
-				if (userEntity.getCompanyid() != null) {
+			if (userEntity.getRole() == RoleConstant.ROLE_ADMIN) {
+				
+				Seikoits_companyEntity companyEntity = seikoits_companyRepository.findByCompanyid(userEntity.getCompanyid());
+				if (companyEntity.getLevel() == LevelConstant.LEVEL_TOP || companyEntity.getLevel() == LevelConstant.LEVEL_ONE) {
+					// 全部を検索
+				}else if (companyEntity.getLevel() == LevelConstant.LEVEL_TWO) {
+					// 該当会社のデバイスを検索
 					exFieldsMap.put("cid", userEntity.getCompanyid().toString());
 				}
-				break;
-			case RoleVal.DEPARTMENT_ADMIN:
-				if (userEntity.getDivisionid() != null) {
-					exFieldsMap.put("cid", userEntity.getCompanyid().toString());
-					exFieldsMap.put("did", userEntity.getDivisionid().toString());
-				}
-				break;
-			case RoleVal.NORMAL:
-				if (userEntity.getGroupid() != null) {
-					exFieldsMap.put("cid", userEntity.getCompanyid().toString());
-					exFieldsMap.put("did", userEntity.getDivisionid().toString());
-					exFieldsMap.put("gid", userEntity.getGroupid().toString());
-				}
-				break;
-			default:
-				break;
+				
+			}else if (userEntity.getRole() == RoleConstant.ROLE_DIV_ADMIN) {
+				
+				exFieldsMap.put("cid", userEntity.getCompanyid().toString());
+				exFieldsMap.put("did", userEntity.getDivisionid().toString());
+				
+			}else if (userEntity.getRole() == RoleConstant.ROLE_DIV_PERSON) {
+				
+				exFieldsMap.put("cid", userEntity.getCompanyid().toString());
+				exFieldsMap.put("did", userEntity.getDivisionid().toString());
+				exFieldsMap.put("gid", userEntity.getGroupid().toString());
+				
 			}
-
+			
 		}
 
 		return exFieldsMap;
@@ -93,11 +88,12 @@ public class GroupService {
 	public boolean isValid(Seikoits_userEntity user, Seikoits_companyEntity companyEntity) {
 		boolean isValid = false;
 
-		// システム管理者であれば、合法
-		if (user.getRole() == null) {
-			isValid = true;
-		}else if (user.getRole() == RoleVal.COMPANY_ADMIN && user.getCompanyid() == companyEntity.getCompanyid()) {
-			isValid = true;
+		// トップ/一級ユーザーであれば、合法
+		if (user.getRole() == RoleConstant.ROLE_ADMIN) {
+			Seikoits_companyEntity userCompanyEntity = seikoits_companyRepository.findByCompanyid(user.getCompanyid());
+			if (userCompanyEntity.getLevel() == LevelConstant.LEVEL_TOP || userCompanyEntity.getLevel() == LevelConstant.LEVEL_ONE) {
+				isValid = true;
+			}
 		}
 
 		return isValid;
@@ -113,9 +109,7 @@ public class GroupService {
 		boolean isValid = false;
 
 		// 部門所属会社の管理者であれば、合法
-		if (user.getRole() == null) {
-			isValid = true;
-		}else if (user.getRole() == RoleVal.COMPANY_ADMIN && user.getCompanyid() == divisionEntity.getCompanyid()) {
+		if (user.getRole() == RoleConstant.ROLE_ADMIN && user.getCompanyid() == divisionEntity.getCompanyid()) {
 			isValid = true;
 		}
 

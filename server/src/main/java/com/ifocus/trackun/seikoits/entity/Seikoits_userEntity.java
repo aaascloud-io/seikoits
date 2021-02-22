@@ -28,12 +28,6 @@ public class Seikoits_userEntity {
 	private String password;
 	private Integer role;
 
-	public class RoleVal{
-		public final static int COMPANY_ADMIN = 1;
-		public final static int DEPARTMENT_ADMIN = 2;
-		public final static int NORMAL = 3;
-	}
-
 	@Lob
 	private String token;
 

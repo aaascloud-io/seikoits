@@ -17,4 +17,9 @@ public interface Seikoits_companyRepository extends CrudRepository<Seikoits_comp
 	 */
 	@Query(value = "SELECT c.* FROM seikoits_company c WHERE c.level >= :level ORDER BY level, corporatenumber",nativeQuery = true)
 	public List<Seikoits_companyEntity> findCompanyListByLevel(@Param("level") Integer level);
+
+	public Seikoits_companyEntity findByCompanyname(String companyname);
+
+	public Seikoits_companyEntity findByCompanyid(Integer companyid);
+
 }
