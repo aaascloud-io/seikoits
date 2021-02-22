@@ -184,6 +184,19 @@ public class UserService {
 	}
 
 	/*
+	 * ユーザプロファイル更新
+	 * @param user Seikoits_userEntity ログインユーザー情報
+	 * @param model Seikoits_userEntity ユーザ情報
+	 * @return Seikoits_userModel 登録後のユーザ情報
+	 *
+	 */
+	public Seikoits_userModel updateUserProfile(Seikoits_userEntity user, Seikoits_userModel model) throws Exception {
+		Seikoits_userEntity entity = getEntitByModelForUpdateProfile(user,model);
+		Seikoits_userEntity updatedEntity = userRepository.save(entity);
+		return getModelByEntity(updatedEntity);
+	}
+
+	/*
 	 * ユーザ削除
 	 * @param model Seikoits_userEntity ユーザ情報
 	 *
@@ -287,6 +300,32 @@ public class UserService {
 			entity.setPassword(DigestUtils.md5Hex(model.getPassword().getBytes()));
 		}
 		entity.setRole(model.getRole());
+
+		entity.setU_uid(user.getUserid());
+		entity.setU_time(systemTime);
+
+		return entity;
+
+	}
+
+	/*
+	 * ModelからEntity取得(更新用)
+	 * @param user Seikoits_userEntity ログインユーザー情報
+	 * @param model Seikoits_userModel
+	 * @return Seikoits_userEntity
+	 *
+	 */
+	private Seikoits_userEntity getEntitByModelForUpdateProfile(Seikoits_userEntity user, Seikoits_userModel model) throws Exception {
+
+		Optional<Seikoits_userEntity> updateUser = userRepository.findById(model.getUserid());
+		Seikoits_userEntity entity = updateUser.get();
+
+		/* システム日時 */
+		Timestamp systemTime = new Timestamp(System.currentTimeMillis());
+
+		// 情報設定
+		entity.setUsername(model.getUsername());
+		entity.setPassword(DigestUtils.md5Hex(model.getPassword().getBytes()));
 
 		entity.setU_uid(user.getUserid());
 		entity.setU_time(systemTime);
