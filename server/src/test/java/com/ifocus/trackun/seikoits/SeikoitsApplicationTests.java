@@ -13,8 +13,10 @@ import com.ifocus.trackun.seikoits.entity.Seikoits_userEntity;
 import com.ifocus.trackun.seikoits.entity.Seikoits_userRepository;
 import com.ifocus.trackun.seikoits.model.Seikoits_companyModel;
 import com.ifocus.trackun.seikoits.model.Seikoits_divisionModel;
+import com.ifocus.trackun.seikoits.model.Seikoits_userModel;
 import com.ifocus.trackun.seikoits.service.CompanyService;
 import com.ifocus.trackun.seikoits.service.DivisionService;
+import com.ifocus.trackun.seikoits.service.UserService;
 
 @SpringBootTest
 class SeikoitsApplicationTests {
@@ -26,6 +28,8 @@ class SeikoitsApplicationTests {
 	private CompanyService companyService;
 	@Autowired
 	private DivisionService divisionService;
+	@Autowired
+	private UserService userService;
 
 	@Test
 	void contextLoads() {
@@ -160,6 +164,31 @@ class SeikoitsApplicationTests {
 		assertEquals("鈴木", updated.getManager());
 		assertEquals("XXX@i-focus.co.jp", updated.getManagermail());
 		assertEquals("03-1234-XXXX", updated.getManagertel());
+
+	}
+
+	/*
+	 * UserService
+	 * ユーザプロファイル更新テストupdateUserProfile
+	 * 正常系
+	 *
+	 */
+	@Test
+	public void testUpdateUserProfile() throws Exception {
+
+		// ifocus
+		Optional<Seikoits_userEntity> loginUserEntity = seikoits_userRepository.findById(1);
+
+		Seikoits_userModel model = new Seikoits_userModel();
+		model.setUserid(1);
+		model.setUsername("ifocus11");
+		model.setLoginid("ifocus");
+		model.setPassword("zaq12wsx");
+
+		Seikoits_userModel updated = userService.updateUserProfile(loginUserEntity.get(), model);
+
+		assertEquals("ifocus11", updated.getUsername());
+		assertEquals("ifocus", updated.getLoginid());
 
 	}
 }
