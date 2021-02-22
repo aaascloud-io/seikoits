@@ -249,6 +249,8 @@ public class IotPFService {
 		urlBuffer.append("&"); // TODO
 		urlBuffer.append("pageNumber=");
 		urlBuffer.append(pageNumber);
+		urlBuffer.append("&"); 
+		urlBuffer.append("bifReturn=true");
 		if (device != null) {
 			if (device.getImei() != null) {
 				urlBuffer.append("&"); // TODO

@@ -25,4 +25,6 @@ public interface Seikoits_groupRepository extends CrudRepository<Seikoits_groupE
 	@Query(value = "SELECT c.* FROM seikoits_group c WHERE c.divisionid = :divisionid AND c.groupname LIKE :groupname ORDER BY groupname",nativeQuery = true)
 	public List<Seikoits_groupEntity> searchDivisionGroupListByName(@Param("divisionid") Integer divisionid, @Param("groupname") String groupname);
 
+	List<Seikoits_groupEntity> findByDivisionid(Integer divisionid);
+	
 }

@@ -17,4 +17,6 @@ public interface Seikoits_divisionRepository extends CrudRepository<Seikoits_div
 	@Query(value = "SELECT c.* FROM seikoits_division c WHERE c.companyid = :companyid ORDER BY divisionname",nativeQuery = true)
 	public List<Seikoits_divisionEntity> findCompanyDivisionList(@Param("companyid") Integer companyid);
 
+	public List<Seikoits_divisionEntity> findByCompanyid(Integer companyid);
+
 }
