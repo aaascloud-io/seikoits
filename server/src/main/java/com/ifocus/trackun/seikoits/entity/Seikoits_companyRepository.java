@@ -22,4 +22,6 @@ public interface Seikoits_companyRepository extends CrudRepository<Seikoits_comp
 
 	public Seikoits_companyEntity findByCompanyid(Integer companyid);
 
+	public Seikoits_companyEntity findByCorporatenumber(String corporatenumber);
+
 }
