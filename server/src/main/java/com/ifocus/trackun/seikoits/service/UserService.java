@@ -337,7 +337,9 @@ public class UserService {
 
 		// 情報設定
 		entity.setUsername(model.getUsername());
-		entity.setPassword(DigestUtils.md5Hex(model.getPassword().getBytes()));
+		if (model.getPassword() != null ) {
+			entity.setPassword(DigestUtils.md5Hex(model.getPassword().getBytes()));
+		}
 
 		entity.setU_uid(user.getUserid());
 		entity.setU_time(systemTime);
