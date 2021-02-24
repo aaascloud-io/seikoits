@@ -64,34 +64,24 @@ public class TreeNodeController {
 					for (Seikoits_companyEntity seikoits_companyEntity : list) {
 						Map<String, Object> companyMap = new HashMap<>();
 						companyMap.put("data", seikoits_companyEntity);
-						
-						List<Map<String, Object>> divisionTrees = new ArrayList<>();
-						List<Seikoits_divisionEntity> divisionEntities = seikoits_divisionRepository.findByCompanyid(seikoits_companyEntity.getCompanyid());
-						for (Seikoits_divisionEntity seikoits_divisionEntity : divisionEntities) {
-							divisionTrees.add(divisionTree(seikoits_divisionEntity));
-						}
-						companyMap.put("divisions", divisionTrees);
-						
+						companyMap.put("divisions", divisionTrees(seikoits_companyEntity.getCompanyid()));
+
 						companyList.add(companyMap);
 					}
 					Map<String, Object> companyMap = new HashMap<>();
 					companyMap.put("data", userCompanyEntity);
 					companyMap.put("companys", companyList);
+					companyMap.put("divisions", divisionTrees(userCompanyEntity.getCompanyid()));
+					
 					treeMap.put("level1Company", companyMap);
 				}else if (userCompanyEntity.getLevel() == LevelConstant.LEVEL_TWO) {
 					// normal company admin
 					Optional<Seikoits_companyEntity> optionalC = companyRepository.findById(user.getCompanyid());
 					if (optionalC.isPresent()) {
 						Seikoits_companyEntity companyEntity = optionalC.get();
-						// find divisions of company
-						List<Map<String, Object>> divisionTrees = new ArrayList<>();
-						List<Seikoits_divisionEntity> divisionEntities = seikoits_divisionRepository.findByCompanyid(user.getCompanyid());
-						for (Seikoits_divisionEntity seikoits_divisionEntity : divisionEntities) {
-							divisionTrees.add(divisionTree(seikoits_divisionEntity));
-						}
 						Map<String, Object> companyMap = new HashMap<>();
 						companyMap.put("data", companyEntity);
-						companyMap.put("divisions", divisionTrees);
+						companyMap.put("divisions", divisionTrees(user.getCompanyid()));
 						treeMap.put("company", companyMap);
 					}
 				}
@@ -115,6 +105,15 @@ public class TreeNodeController {
 		}
 
 		return returnMap;
+	}
+
+	private List<Map<String, Object>> divisionTrees(Integer companyid) {
+		List<Map<String, Object>> divisionTrees = new ArrayList<>();
+		List<Seikoits_divisionEntity> divisionEntities = seikoits_divisionRepository.findByCompanyid(companyid);
+		for (Seikoits_divisionEntity seikoits_divisionEntity : divisionEntities) {
+			divisionTrees.add(divisionTree(seikoits_divisionEntity));
+		}
+		return divisionTrees;
 	}
 
 	private Map<String, Object> divisionTree(Seikoits_divisionEntity divisionEntity) {
