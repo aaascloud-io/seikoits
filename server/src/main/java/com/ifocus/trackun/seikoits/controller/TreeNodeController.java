@@ -55,8 +55,27 @@ public class TreeNodeController {
 				
 				Integer companyid = user.getCompanyid();
 				Seikoits_companyEntity userCompanyEntity = companyRepository.findByCompanyid(companyid);
-				if (userCompanyEntity.getLevel() == LevelConstant.LEVEL_TOP || userCompanyEntity.getLevel() == LevelConstant.LEVEL_ONE) {
-					// ifocus user
+				if (userCompanyEntity.getLevel() == LevelConstant.LEVEL_TOP) {
+					// ifocus user TODO bug
+					List<Map<String, Object>> companyList = new ArrayList<>();
+					
+					List<Seikoits_companyEntity> list = companyRepository.findCompanyListByLevel(LevelConstant.LEVEL_ONE); // level1 companys are children, too
+					list.addAll(companyRepository.findCompanyListByLevel(LevelConstant.LEVEL_TWO));
+					
+					for (Seikoits_companyEntity seikoits_companyEntity : list) {
+						Map<String, Object> companyMap = new HashMap<>();
+						companyMap.put("data", seikoits_companyEntity);
+						companyMap.put("divisions", divisionTrees(seikoits_companyEntity.getCompanyid()));
+
+						companyList.add(companyMap);
+					}
+					Map<String, Object> companyMap = new HashMap<>();
+					companyMap.put("data", userCompanyEntity);
+					companyMap.put("companys", companyList);
+					companyMap.put("divisions", divisionTrees(userCompanyEntity.getCompanyid()));
+					
+					treeMap.put("level1Company", companyMap);
+				}else if (userCompanyEntity.getLevel() == LevelConstant.LEVEL_ONE) {
 					// its user TODO bug
 					// find all companys TODO bug, no method to find companies, just user all level 2 company
 					List<Seikoits_companyEntity> list = companyRepository.findCompanyListByLevel(LevelConstant.LEVEL_TWO);
