@@ -157,7 +157,7 @@ public class UserService {
 				returnStr = "担当者には、groupidの指定が必須です。";
 			} else {
 				// グループ情報取得
-				Optional<Seikoits_groupEntity> group = groupRepository.findById(user.getGroupid());
+				Optional<Seikoits_groupEntity> group = groupRepository.findById(model.getGroupid());
 				// 会社IDを設定する
 				model.setCompanyid(group.get().getCompanyid());
 				// 部門IDを設定する
